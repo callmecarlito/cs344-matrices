@@ -1,0 +1,7 @@
+#! /bin/bash
+echo -e "$SHELL\t"
+echo -e "$HOME\t"
+pwd
+cd ~
+pwd
+ls -pla --color=auto
