@@ -1,0 +1,3 @@
+#! /bin/bash
+echo -e "$SHELL\t"
+echo -e "...also Hello World\n"
