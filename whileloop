@@ -1,0 +1,11 @@
+#! /bin/bash
+
+n=5
+
+while test $n -ne 0
+do
+    printf "n = $n\n"
+    n=$(expr $n - 1)
+done
+
+printf "n = $n(outside loop)\n"
