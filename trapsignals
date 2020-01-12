@@ -1,0 +1,11 @@
+#! /bin/bash
+
+TMP="aFileName$$"
+trap "rm -f $TMP; echo 'CTRL+C received, exiting'; exit 1" INT HUP TERM
+echo "lotsa text [$$]" > $TMP
+num=5000
+while test $num -ne 0
+do
+    echo "[$num]Never ending loop, to exit hit CTRL+C"
+    num=$(expr $num - 1)
+done
