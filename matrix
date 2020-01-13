@@ -1,39 +1,39 @@
 #! /bin/bash
-echo -e "$SHELL\t"
-echo -e "...also Hello World\n"
+printf "*************SHELL: $SHELL*************\n"
 
 #
 # dims() operation call - 
 #
 #
 dims(){
-
+    printf "dims called with arg: $1\n"
 }
 #
 # transpose() operation call - 
 #
 #
 transpose(){
-    
+    printf "transpose called with arg: $1\n"
 }
 #
 # mean() operation call - 
 #
 #
 mean(){
-    
+    printf "mean called with arg: $1\n"
 }
 #
 # add() operation call - 
 #
 #
 add(){
-    
+    printf "add called with arg1: $1, arg2: $2\n"
 }
 #
 # multiply() operation call - 
 #
 #
 multiply(){
-    
+    printf "add called with arg1: $1, arg2: $2\n"
 }
+$1 ${@:2}
