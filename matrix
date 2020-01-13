@@ -1,3 +1,39 @@
 #! /bin/bash
 echo -e "$SHELL\t"
 echo -e "...also Hello World\n"
+
+#
+# dims() operation call - 
+#
+#
+dims(){
+
+}
+#
+# transpose() operation call - 
+#
+#
+transpose(){
+    
+}
+#
+# mean() operation call - 
+#
+#
+mean(){
+    
+}
+#
+# add() operation call - 
+#
+#
+add(){
+    
+}
+#
+# multiply() operation call - 
+#
+#
+multiply(){
+    
+}
