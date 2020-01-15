@@ -7,6 +7,17 @@ printf "*************SHELL: $SHELL*************\n"
 #
 dims(){
     printf "dims called with arg: $1\n"
+    numCols=0
+    numRows=0
+    while read numLine
+    do
+        for i in $numLine
+        do
+            numCols=$(expr $numCols + 1)
+        done
+    done <$1
+    numRows=$(wc -l <$1)
+    printf "numCols: $numCols\tnumRows: $numRows\n"
 }
 #
 # transpose() operation call - 
