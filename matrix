@@ -1,13 +1,12 @@
 #! /bin/bash
 printf "*************SHELL: $SHELL*************\n"
 #global variables
-numCols=0
 numRows=0
-
+numCols=0
 
 # validateMatrix()
 # parameter(s): File containing matrix to be verified
-# function: Matrix was meet following requirements:
+# function: Check matrix to assure requirements:
 #   1. File is readable
 #   2. Tab-delimited table
 #   3. Must contain at least one element
@@ -24,13 +23,18 @@ numRows=0
 #                   - output an error message to stderr
 #                   - return value should be non-zero
 validateMatrix(){
-
+    printf "validating matrix\n"
 }
+
 # dims()
-# parameters: A matrix of integers which can be contained in a file or entered via stdin    
-# function: calculates the dimensions of the matrix
-# output: number of rows and the number of columns separated by a single space
-# error handling: 
+# parameter(s): A matrix of integers which can be contained in a file or entered via stdin    
+# function: Calculates the dimensions of the matrix
+# output: Number of rows and the number of columns separated by a single space to stdout 
+#         and return 0
+# error handling: Print error message to stderr and return/exit 1
+#       In the event that:
+#           - argument count is  > 1
+#           - file containing matrix cannot be read
 dims(){
     printf "dims called with arg: $1\n"
     
@@ -42,34 +46,60 @@ dims(){
         done
     done <$1
     numRows=$(wc -l <$1)
-    printf "numCols: $numCols\tnumRows: $numRows\n"
+    printf "$numRows $numCols\n"
 }
-#
-# transpose() operation call - 
-#
-#
+
+# transpose()
+# parameter(s): A matrix of integers which can be contained in a file or entered via stdin
+# function: Relects matrix along the main diagnol. MxN => NxM
+# output: Output the new matrix to stdout and return 0
+# error handling: Print error message to stderr and return/exit 1
+#       In the event that:
+#           - argument count is  > 1
+#           - file containing matrix cannot be read
 transpose(){
     printf "transpose called with arg: $1\n"
 }
-#
-# mean() operation call - 
-#
-#
+
+# mean() 
+# parameter(s): A matrix of integers which can be contained in a file or entered via stdin
+# function: Calculates the mean of the values for each column in the matrix
+# output: Output the mean values for each row to stdout and return 0
+# error handling: Print error message to stderr and return/exit 1
+#       In the event that:
+#           - argument count is  > 1
+#           - file containing matrix cannot be read
 mean(){
     printf "mean called with arg: $1\n"
 }
-#
-# add() operation call - 
-#
-#
+
+# add()
+# parameter(s): Two matrices contained within files   
+# function: Adds the two matrices element wise to produce another matrix
+# output: Output the new matrix containing all the sum values to stdout 
+#         and return 0
+# error handling: Print error message to stderr and return/exit 1
+#       In the event that:
+#           - argument count is != 2
+#           - either file containing a matrix cannot be read
+#           - the dimensions of the input matrices do not allow them to be 
+#             added together following the rules of matrix addition
 add(){
     printf "add called with arg1: $1, arg2: $2\n"
 }
-#
+
 # multiply() operation call - 
-#
-#
+# parameter(s):    
+# function: 
+# output: 
+# error handling: Print error message to stderr and return/exit 1
+#       In the event that:
+#           - argument count is != 2
+#           - either file containing a matrix cannot be read
+#           - the dimensions of the input matrices do not allow them to be 
+#             multiplied together following the rules of matrix multiplication
 multiply(){
     printf "add called with arg1: $1, arg2: $2\n"
 }
 $1 ${@:2}
+
