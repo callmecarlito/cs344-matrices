@@ -36,7 +36,7 @@ validateMatrix(){
 #           - argument count is  > 1
 #           - file containing matrix cannot be read
 dims(){
-    printf "dims called with arg: $1\n"
+    #printf "dims called with arg: $1\n"
     
     while read numLine
     do
