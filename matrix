@@ -1,14 +1,39 @@
 #! /bin/bash
 printf "*************SHELL: $SHELL*************\n"
+#global variables
+numCols=0
+numRows=0
 
-#
-# dims() operation call - 
-#
-#
+
+# validateMatrix()
+# parameter(s): File containing matrix to be verified
+# function: Matrix was meet following requirements:
+#   1. File is readable
+#   2. Tab-delimited table
+#   3. Must contain at least one element
+#   4. Each element must be a signed int and defined
+#   5. Table must be rectangular
+#   6. Must not allow:
+#           - empty matrix
+#           - matrix where final entry on a row is a tab character
+#           - matrix with empty lines
+#           - matrix with any element that is blank or not an int
+# output: If matrix is valid, there is no output and the program will resume with
+#         executing the user command. 
+#         If matrix is invalid then:
+#                   - output an error message to stderr
+#                   - return value should be non-zero
+validateMatrix(){
+
+}
+# dims()
+# parameters: A matrix of integers which can be contained in a file or entered via stdin    
+# function: calculates the dimensions of the matrix
+# output: number of rows and the number of columns separated by a single space
+# error handling: 
 dims(){
     printf "dims called with arg: $1\n"
-    numCols=0
-    numRows=0
+    
     while read numLine
     do
         for i in $numLine
