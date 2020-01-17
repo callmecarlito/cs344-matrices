@@ -1,16 +1,33 @@
 #! /bin/bash
+colCnt=0
+numCols=-5
+numRows=0
 lineSum=0
-sum=0
+totalSum=0
 while read myLine
 do
     for i in $myLine
     do
         printf "$i\t"
         lineSum=$(expr $lineSum + $i)
+        colCnt=$(expr $colCnt + 1)
     done
-    printf "\nline sum: $lineSum\n"
-    sum=$(expr $sum + $lineSum)
+    
+    printf "\tline lineSum: $lineSum\n"
+    totalSum=$(expr $totalSum + $lineSum)
     lineSum=0
-done < $1
-cat -A < $1
-printf "sum: $sum\n"
+
+    if [ $numCols -le 0 ]
+    then
+        numCols=$colCnt
+        #printf "numCols set to $numCols\n"
+    elif [ $colCnt -ne $numCols ]
+    then
+        printf "Error - invalid matrix\n"
+        exit 1
+    fi
+    colCnt=0
+    numRows=$(expr $numRows + 1)
+done < ${1:-/dev/stdin}
+#cat -A < ${1:-/dev/stdin}
+printf "totalSum: $totalSum\tnumCols: $numCols\tnumRows: $numRows\n"
