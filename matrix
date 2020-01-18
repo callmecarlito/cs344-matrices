@@ -37,7 +37,28 @@ validateMatrix(){
 #           - argument count is  > 1
 #           - file containing matrix cannot be read
 dims(){
+    #printf "dims called with arg: $1\n"
+    colCnt=0
+    while read numLine
+        do
+        for i in $numLine
+            do
+            colCnt=$(expr $colCnt + 1)
+        done
 
+        if [ $numCols -le 0 ]
+            then
+            numCols=$colCnt
+        #printf "numCols set to $numCols\n"
+        elif [ $colCnt -ne $numCols ]
+            then
+            printf "Error - invalid matrix\n"
+            exit 1
+        fi
+        colCnt=0
+        numRows=$(expr $numRows + 1)
+    done <$1
+    printf "$numRows $numCols\n"
 }
 
 # transpose()
