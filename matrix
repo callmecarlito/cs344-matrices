@@ -1,9 +1,10 @@
 #! /bin/bash
 printf "*************SHELL: $SHELL*************\n"
 #global variables
+filePath=tempFile$$
 numRows=0
 numCols=0
-filePath=tempFile$$
+
 
 # validateMatrix()
 # parameter(s): File containing matrix to be verified
