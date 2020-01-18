@@ -57,7 +57,7 @@ dims(){
         fi
         colCnt=0
         numRows=$(expr $numRows + 1)
-    done <$1
+    done <${1:-/dev/stdin}
     printf "$numRows $numCols\n"
 }
 
@@ -132,7 +132,8 @@ if [ $1 = "dims" ] || [ $1 = "transpose" ] || [ $1 = "mean" ]
     #two args total => means no file name passed => which means read from stdin
     else
         cat > $filePath
-        $1 $tempFile$$
+        $1 tempFile$$
+        rm -f tempFile$$
     fi
 fi
 
