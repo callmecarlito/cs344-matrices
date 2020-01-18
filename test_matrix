@@ -1,0 +1,33 @@
+#! /bin/bash
+
+dims(){
+    echo -e "dims called\n"
+}
+transpose(){
+    echo -e "transpose called\n"
+}
+mean(){
+    echo -e "mean called\n"
+}
+
+#operation == dims or transpose or mean
+if [ $1 = "dims" ] || [ $1 = "transpose" ] || [ $1 = "mean" ]
+    then
+    echo -e "arg1: $1\targ2: $2\t argc: $#\n"
+    #if user tries to pass more than two args to the above three operations
+    if [ $# -gt 2 ]
+        #handle error
+        then
+        #error message redirected from stdout to stderr
+        echo -e "Error executing $1 - invalid number of arguments" 
+        exit 1
+    #three args total ($2 contains file name to be passed to operation) 
+    elif [ $# = 2 ]
+        then
+        $1 $2
+    #two args total => means no file name passed => which means read from stdin
+    else
+        cat > $filePath
+        $1 $tempFile$$
+    fi
+fi
