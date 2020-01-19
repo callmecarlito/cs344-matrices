@@ -1,0 +1,25 @@
+#! /bin/bash
+
+#variables
+inputFile=tempInputFile$$
+tempCol=tempColFile$$
+tempRow=tempRowFile$$
+
+#steps for transposing matrix
+inputFile=$1
+
+echo -e "original matrix"
+cat -A $inputFile
+echo
+
+cut -f 1 $inputFile > $tempCol
+cat $tempCol | tr '\n' '\t' > $tempRow
+temp=$(cat -A $tempRow)
+temp=${temp::-2}
+echo $temp > $tempRow
+
+cat -A $tempRow
+echo
+
+rm -f $tempCol
+rm -f $tempRow
