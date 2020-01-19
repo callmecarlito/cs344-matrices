@@ -82,7 +82,36 @@ dims(){
 #           - argument count is  > 1
 #           - file containing matrix cannot be read
 transpose(){
-    printf "transpose called with arg: $1\n"
+    #variables
+    tempCol=tempColFile$$
+    tempRow=tempRowFile$$
+    tempOutput=tempOutputFile$$
+    colCnt=0
+
+    #call dims to find number of columns for matrix
+    dims $1 1>/dev/null #redirect output from stdout to /dev/null
+
+    while [ $colCnt -ne $numCols ]
+        do
+        #increment colCnt
+        colCnt=$(expr $colCnt + 1)
+        #cut colCnt'th field
+        cut -f $colCnt $1 > $tempCol
+        #transform newline chars to tabs 
+        cat $tempCol | tr '\n' '\t' > $tempRow
+        temp=$(cat $tempRow)
+        #removes trailing tab char
+        temp=${temp::-1}
+        #append row to output file
+        echo "$temp" >> $tempOutput
+    done
+
+    #output transposed matrix to stdout
+    cat $tempOutput
+    #remove temp files
+    rm -f $tempCol
+    rm -f $tempRow
+    rm -f $tempOutput
 }
 
 # mean() 
