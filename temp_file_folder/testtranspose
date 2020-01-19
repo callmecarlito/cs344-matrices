@@ -4,22 +4,31 @@
 inputFile=tempInputFile$$
 tempCol=tempColFile$$
 tempRow=tempRowFile$$
-
+tempOutput=tempOutputFile$$
+colCnt=0
+numCols=3
 #steps for transposing matrix
 inputFile=$1
 
 echo -e "original matrix"
-cat -A $inputFile
+cat $inputFile
 echo
 
-cut -f 1 $inputFile > $tempCol
-cat $tempCol | tr '\n' '\t' > $tempRow
-temp=$(cat -A $tempRow)
-temp=${temp::-2}
-echo $temp > $tempRow
+while [ $colCnt -ne $numCols ]
+do 
+    colCnt=$(expr $colCnt + 1)
+    echo -e "[ $colCnt ]"
+    cut -f $colCnt $inputFile > $tempCol
+    cat $tempCol | tr '\n' '\t' > $tempRow
+    temp=$(cat $tempRow)
+    temp=${temp::-1}
+    echo "$temp" >> $tempOutput
+done
 
-cat -A $tempRow
+echo "transposed matrix"
+cat $tempOutput
 echo
 
 rm -f $tempCol
 rm -f $tempRow
+rm -f $tempOutput
