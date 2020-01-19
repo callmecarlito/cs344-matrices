@@ -82,10 +82,11 @@ dims(){
 #           - argument count is  > 1
 #           - file containing matrix cannot be read
 transpose(){
-    #variables
+    #temp files to store data
     tempCol=tempColFile$$
     tempRow=tempRowFile$$
     tempOutput=tempOutputFile$$
+    #variable to keep count of the column to be cut
     colCnt=0
 
     #call dims to find number of columns for matrix
