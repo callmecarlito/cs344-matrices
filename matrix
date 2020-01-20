@@ -1,5 +1,4 @@
 #! /bin/bash
-printf "*************SHELL: $SHELL*************\n"
 #global variables
 filePath=tempFile$$
 numRows=0
@@ -205,7 +204,8 @@ multiply(){
 #
 ###########################################################################
 
-echo -e "arg1: $1\targ2: $2\targ3: $3\t argc: $#"
+#echo -e "arg1: $1\targ2: $2\targ3: $3\t argc: $#"
+
 #operation == dims or transpose or mean
 if [ $1 = "dims" ] || [ $1 = "transpose" ] || [ $1 = "mean" ]
     then
@@ -214,7 +214,7 @@ if [ $1 = "dims" ] || [ $1 = "transpose" ] || [ $1 = "mean" ]
         #handle error
         then
         #error message redirected from stdout to stderr
-        echo -e "Error executing $1 - invalid number of arguments" 
+        echo -e "Error executing $1 - invalid number of arguments" 1>&2
         exit 1
     #three args total ($2 contains file name to be passed to operation) 
     elif [ $# = 2 ]
