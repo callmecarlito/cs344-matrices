@@ -137,7 +137,6 @@ mean(){
 
     #call transpose and redirect output to a tempFile
     transpose $1 | cat >$tempInput
-    cat $tempInput
 
     #read row of numbers from file into variable numLine
     while read numLine
@@ -151,14 +150,19 @@ mean(){
             numSum=$(expr $numSum + $numVal)
         done
         #find mean
-        echo -e "numCnt: $numCnt\tnumSum: $numSum"
+        meanVal=$(( ($numSum + ($numCnt/2)) * (($numSum > 0) * 2 - 1)/ $numCnt ))
+        #echo  -e "numSum: $numSum\tnumCnt: $numCnt\tmeanVal: $meanVal"   
         #append mean value to tempOutput
-
+        printf "$meanVal\t" >> $tempOutput
         #zero out variables before beginning next iteration
         numCnt=0
         numSum=0
         meanVal=0
     done <$tempInput
+    #add newline char to end of line
+    echo >> $tempOutput
+
+    cat $tempOutput
 
     #remove tempFiles
     rm -f $tempInput
