@@ -124,7 +124,45 @@ transpose(){
 #           - argument count is  > 1
 #           - file containing matrix cannot be read
 mean(){
-    printf "mean called with arg: $1\n"
+    #temp files to store data
+    tempInput=tempInputFile$$
+    tempOutput=tempOutputFile$$
+    #variables
+    numCnt=0 #count of the the numbers being added
+    numSum=0 #sum of values being added
+    meanVal=0 #mean value of the numbers being added
+
+    ## using transpose to convert columns into rows so that I can use ##
+    ## a while loop to read each line(row) and calculate the mean     ##
+
+    #call transpose and redirect output to a tempFile
+    transpose $1 | cat >$tempInput
+    cat $tempInput
+
+    #read row of numbers from file into variable numLine
+    while read numLine
+        do
+        #for each value in numLine
+        for numVal in $numLine
+            do
+            #increment numCnt
+            numCnt=$(expr $numCnt + 1)
+            #added value in i to numSum
+            numSum=$(expr $numSum + $numVal)
+        done
+        #find mean
+        echo -e "numCnt: $numCnt\tnumSum: $numSum"
+        #append mean value to tempOutput
+
+        #zero out variables before beginning next iteration
+        numCnt=0
+        numSum=0
+        meanVal=0
+    done <$tempInput
+
+    #remove tempFiles
+    rm -f $tempInput
+    rm -f $tempOutput
 }
 
 # add()
