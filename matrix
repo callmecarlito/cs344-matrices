@@ -189,17 +189,21 @@ add(){
     numRowsB=0
     numColsB=0
 
+    #find the dims of the matrix from arg 1
     dims $1 1>/dev/null
     numRowsA=$numRows
     numColsA=$numCols
+    #zero out global variables
     numRows=0
     numCols=0
+    #find the dims of the matrix from arg 2
     dims $2 1>/dev/null
     numRowsB=$numRows
     numColsB=$numCols
 
-    echo -e "A: $numRowsA $numColsA\tB: $numRowsB $numColsB"
+    #echo -e "A: $numRowsA $numColsA\tB: $numRowsB $numColsB"
 
+    #checks to make sure the dimensions of the matrices are the same before performing add
     if [ $numRowsA -ne $numRowsB ] || [ $numColsA -ne $numColsB ]
         then
         echo -e "Error executing add - $1 and $2 must be the same dimensions" 1>/dev/stderr
