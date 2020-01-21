@@ -66,7 +66,7 @@ dims(){
         numRows=$(expr $numRows + 1)
     #read commant will read from file provided via argument 1 
     #or via data being passed in from stdin
-    done <${1:-/dev/stdin}
+    done <$1
     #output of the results of the dimensions of the matrix
     printf "$numRows $numCols\n"
     return 0
@@ -158,8 +158,12 @@ mean(){
         numSum=0
         meanVal=0
     done <$tempInput
+
+    #removes trailing tab char
+    temp=$(cat $tempOutput)
+    temp=${temp::-1}
     #add newline char to end of line
-    echo >> $tempOutput
+    echo "$temp" > $tempOutput
 
     cat $tempOutput
 
@@ -180,7 +184,9 @@ mean(){
 #           - the dimensions of the input matrices do not allow them to be 
 #             added together following the rules of matrix addition
 add(){
-    printf "add called with arg1: $1, arg2: $2\n"
+    read rowA colA < dims $1
+    read rowB colB < dims $2
+    echo -e "A: $rowA $colA\tB: $rowB $colB"
 }
 
 # multiply() operation call - 
@@ -194,7 +200,7 @@ add(){
 #           - the dimensions of the input matrices do not allow them to be 
 #             multiplied together following the rules of matrix multiplication
 multiply(){
-    printf "add called with arg1: $1, arg2: $2\n"
+    printf "multiply called with arg1: $1, arg2: $2\n"
 }
 
 ###########################################################################
@@ -214,18 +220,40 @@ if [ $1 = "dims" ] || [ $1 = "transpose" ] || [ $1 = "mean" ]
         #handle error
         then
         #error message redirected from stdout to stderr
-        echo -e "Error executing $1 - invalid number of arguments" 1>&2
-        exit 1
+        echo -e "Error executing $1 - invalid number of arguments" 1>/dev/stderr
+        return 1
     #three args total ($2 contains file name to be passed to operation) 
     elif [ $# = 2 ]
         then
-        $1 $2
+        #check file is exists and is readable
+        if [ -a $2 ] && [ -r $2 ]
+            then
+            $1 $2
+        else
+            echo -e "Error executing $1 - file does not exist or is unreadable" 1>/dev/stderr
+            return 1
+        fi
     #two args total => means no file name passed => which means read from stdin
     else
         cat > $filePath
         $1 tempFile$$
         rm -f tempFile$$
     fi
+#else if operation == add or multiply
+elif [ $1 = "add" ] || [ $1 = "multiply" ]
+    then
+    #if total number of args != 3
+    if [ $# -ne 3 ]
+        then
+            echo -e "Error executing $1 - invalid number of arguments" 1>/dev/stderr
+            return 1
+    else
+        $1 $2 $3
+    fi
+#if arg 1 does not match one of the five operations
+else
+    echo "Error - bad command" 1>/dev/stderr
+    return 1
 fi
 
 #$1 ${@:2}
