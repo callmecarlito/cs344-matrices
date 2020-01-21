@@ -1,6 +1,5 @@
 #! /bin/bash
 #global variables
-filePath=tempFile$$
 numRows=0
 numCols=0
 
@@ -184,9 +183,28 @@ mean(){
 #           - the dimensions of the input matrices do not allow them to be 
 #             added together following the rules of matrix addition
 add(){
-    read rowA colA < dims $1
-    read rowB colB < dims $2
-    echo -e "A: $rowA $colA\tB: $rowB $colB"
+    #variables
+    numRowsA=0
+    numColsA=0
+    numRowsB=0
+    numColsB=0
+
+    dims $1 1>/dev/null
+    numRowsA=$numRows
+    numColsA=$numCols
+    numRows=0
+    numCols=0
+    dims $2 1>/dev/null
+    numRowsB=$numRows
+    numColsB=$numCols
+
+    echo -e "A: $numRowsA $numColsA\tB: $numRowsB $numColsB"
+
+    if [ $numRowsA -ne $numRowsB ] || [ $numColsA -ne $numColsB ]
+        then
+        echo -e "Error executing add - $1 and $2 must be the same dimensions" 1>/dev/stderr
+        return 1
+    fi
 }
 
 # multiply() operation call - 
@@ -212,6 +230,7 @@ multiply(){
 
 #echo -e "arg1: $1\targ2: $2\targ3: $3\t argc: $#"
 
+filePath=tempFile$$
 #operation == dims or transpose or mean
 if [ $1 = "dims" ] || [ $1 = "transpose" ] || [ $1 = "mean" ]
     then
@@ -230,6 +249,7 @@ if [ $1 = "dims" ] || [ $1 = "transpose" ] || [ $1 = "mean" ]
             then
             $1 $2
         else
+            #error message redirected from stdout to stderr
             echo -e "Error executing $1 - file does not exist or is unreadable" 1>/dev/stderr
             return 1
         fi
