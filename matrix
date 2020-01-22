@@ -268,7 +268,36 @@ add(){
 #           - the dimensions of the input matrices do not allow them to be 
 #             multiplied together following the rules of matrix multiplication
 multiply(){
-    printf "multiply called with arg1: $1, arg2: $2\n"
+    #temp files
+    tempInput=tempInputFile$$
+    tempRowA=tempRowAFile$$
+    tempRowB=tempRowBFile$$
+    tempSum=tempSumFile$$
+    tempOutput=tempOutputFile$$
+    #variables
+    numRowsA=0
+    numColsA=0
+    numRowsB=0
+    numColsB=0
+
+    #echo results from dims on matrix in arg 1 into a temp input file
+    echo $(dims $1) >$tempInput
+    #read values into the variables from temp input file
+    read numRowsA numColsA <$tempInput
+    #repeat on matrix in arg 2
+    echo $(dims $2) >$tempInput
+    read numRowsB numColsB <$tempInput
+    #remove temp input file
+    rm -f $tempInput
+
+    #checks to make sure the dimensions of the matrices are the same before performing matrix multiplication
+    if [ $numColsA -ne $numRowsB ]
+        then
+        #output corresponding error message to stderr
+        echo -e "Error executing multiplication - matrix dimensions are invalid for this operation" 1>/dev/stderr
+        #return non-zero value
+        return 1
+    fi
 }
 
 ###########################################################################
