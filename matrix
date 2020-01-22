@@ -95,14 +95,14 @@ transpose(){
         #increment colCnt
         colCnt=$(expr $colCnt + 1)
         #cut colCnt'th field
-        cut -f $colCnt $1 > $tempCol
+        cut -f $colCnt $1 >$tempCol
         #transform newline chars to tabs 
-        cat $tempCol | tr '\n' '\t' > $tempRow
+        cat $tempCol | tr '\n' '\t' >$tempRow
         temp=$(cat $tempRow)
         #removes trailing tab char
         temp=${temp::-1}
         #append row to output file
-        echo "$temp" >> $tempOutput
+        echo "$temp" >>$tempOutput
     done
 
     #output transposed matrix to stdout
@@ -151,7 +151,7 @@ mean(){
         meanVal=$(( ($numSum + ($numCnt / 2)*( ($numSum > 0)*2 - 1 )) / $numCnt ))
         #echo  -e "numSum: $numSum\tnumCnt: $numCnt\tmeanVal: $meanVal"   
         #append mean value to tempOutput
-        echo -en "$meanVal\t" >> $tempOutput
+        echo -en "$meanVal\t" >>$tempOutput
         #zero out variables before beginning next iteration
         numCnt=0
         numSum=0
@@ -184,8 +184,10 @@ mean(){
 #             added together following the rules of matrix addition
 add(){
     #temp files
+    tempInput=tempInputFile$$
     tempRowA=tempRowAFile$$
     tempRowB=tempRowBFile$$
+    tempSum=tempSumFile$$
     tempOutput=tempOutputFile$$
     #variables
     numRowsA=0
@@ -195,17 +197,22 @@ add(){
     colCnt=1
     sum=0
 
-    echo $(dims $1) >$tempOutput
-    read numRowsA numColsA <$tempOutput
-
-    echo $(dims $2) >$tempOutput
-    read numRowsB numColsB <$tempOutput
-    #echo -e "A: $numRowsA $numColsA\tB: $numRowsB $numColsB"
+    #echo results from dims on matrix in arg 1 into a temp input file
+    echo $(dims $1) >$tempInput
+    #read values into the variables from temp input file
+    read numRowsA numColsA <$tempInput
+    #repeat on matrix in arg 2
+    echo $(dims $2) >$tempInput
+    read numRowsB numColsB <$tempInput
+    #remove temp input file
+    rm -f $tempInput
 
     #checks to make sure the dimensions of the matrices are the same before performing add
     if [ $numRowsA -ne $numRowsB ] || [ $numColsA -ne $numColsB ]
         then
+        #output corresponding error message to stderr
         echo -e "Error executing add - $1 and $2 must be the same dimensions" 1>/dev/stderr
+        #return non-zero value
         return 1
     fi
 
@@ -213,21 +220,40 @@ add(){
     #on reading two files simultanesously
     while IFS= read -r numLineA && IFS= read -r numLineB <&3
         do
+        #echo lines read into temp files
         echo "$numLineA" >$tempRowA
         echo "$numLineB" >$tempRowB
+        #iterate through each column of values
         while [ $colCnt -le $numColsA ]
             do
+            #cut colCnt'th column from each row of each temp file
             numA=$(cut -f $colCnt $tempRowA)
             numB=$(cut -f $colCnt $tempRowB)
+            #add those two values
             sum=$(expr $numA + $numB)
-            echo "sum: $sum"
+            echo -ne "$sum\t" >>$tempSum
+            #increment counter to next column
             colCnt=$(expr $colCnt + 1)
-        done 
+        done
+        #remove trailing tab 
+        temp=$(cat $tempSum)
+        temp=${temp::-1}
+        #echo formatted row onto the temp output file
+        echo -ne "$temp" >>$tempOutput
+        #clear $tempSum file for next set of data
+        echo > $tempSum
+        #return colCnt to 1 before iterating through the next line read
         colCnt=1 
     done <$1 3<$2
 
+    #add final newline char after last row of data is appended
+    echo >>$tempOutput
+    #output resulting matrix
+    cat $tempOutput
+
     rm -f $tempRowA
     rm -f $tempRowB
+    rm -f $tempSum
     rm -f $tempOutput
 }
 
