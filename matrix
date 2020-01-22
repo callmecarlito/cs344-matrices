@@ -184,13 +184,15 @@ mean(){
 #             added together following the rules of matrix addition
 add(){
     #temp files
-    tempRow=tempRowFile$$
+    tempRowA=tempRowAFile$$
+    tempRowB=tempRowBFile$$
     tempOutput=tempOutputFile$$
     #variables
     numRowsA=0
     numColsA=0
     numRowsB=0
     numColsB=0
+    colCnt=1
     sum=0
 
     echo $(dims $1) >$tempOutput
@@ -211,18 +213,21 @@ add(){
     #on reading two files simultanesously
     while IFS= read -r numLineA && IFS= read -r numLineB <&3
         do
-            for valA in $numLineA 
-                do
-                for valB in $numLineB
-                    do
-                    sum=$(expr $valA + $valB)
-                    printf "$sum\t" >> $tempRow
-                done
-            done
-            cat $tempRow
+        echo "$numLineA" >$tempRowA
+        echo "$numLineB" >$tempRowB
+        while [ $colCnt -le $numColsA ]
+            do
+            numA=$(cut -f $colCnt $tempRowA)
+            numB=$(cut -f $colCnt $tempRowB)
+            sum=$(expr $numA + $numB)
+            echo "sum: $sum"
+            colCnt=$(expr $colCnt + 1)
+        done 
+        colCnt=1 
     done <$1 3<$2
 
-    rm -f $tempRow
+    rm -f $tempRowA
+    rm -f $tempRowB
     rm -f $tempOutput
 }
 
