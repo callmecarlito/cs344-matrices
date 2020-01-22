@@ -1,0 +1,114 @@
+#! /bin/bash
+numRows=0
+numCols=0
+
+dims(){
+    tempOutput=tempOutputFile$$
+    #variable to store column count
+    colCnt=0
+    #read each line from  file or stdin into numLine
+    while read numLine
+        do
+        #for each value read from numLine
+        for i in $numLine
+            do
+            #increment colCnt by 1
+            colCnt=$(expr $colCnt + 1)
+        done
+        #if global variable numCols has not been set yet
+        if [ $numCols -eq 0 ]
+            then
+            #set numCols to initial colCnt
+            numCols=$colCnt
+        #else if colCnt is not equal to numCols
+        elif [ $colCnt -ne $numCols ]
+            then
+            #print error message and exit
+            printf "Error - invalid matrix\n"
+            exit 1
+        fi
+        #reset colCnt for next line 
+        colCnt=0
+        #incmrenent global variable numRows
+        numRows=$(expr $numRows + 1)
+    #read commant will read from file provided via argument 1 
+    #or via data being passed in from stdin
+    done <$1
+    #output of the results of the dimensions of the matrix
+    echo -e "$numRows $numCols"
+    return 0
+}
+
+add(){
+    #temp files
+    tempRow=tempRowFile$$
+    tempOutput=tempOutputFile$$
+    #variables
+    numRowsA=0
+    numColsA=0
+    numRowsB=0
+    numColsB=0
+    sum=0
+
+    echo $(dims $1) >$tempOutput
+    read numRowsA numColsA <$tempOutput
+
+    echo $(dims $2) >$tempOutput
+    read numRowsB numColsB <$tempOutput
+    echo -e "A: $numRowsA $numColsA\tB: $numRowsB $numColsB"
+
+    rm -f $tempRow
+    rm -f $tempOutput
+}
+
+oldAdd(){
+    #temp files
+    tempRow=tempRowFile$$
+    tempOutput=tempOutputFile$$
+    #variables
+    numRowsA=0
+    numColsA=0
+    numRowsB=0
+    numColsB=0
+    sum=0
+
+    #find the dims of the matrix from arg 1
+    dims $1 1>/dev/null
+    numRowsA=$numRows
+    numColsA=$numCols
+    #zero out global variables
+    numRows=0
+    numCols=0
+    #find the dims of the matrix from arg 2
+    dims $2 1>/dev/null
+    numRowsB=$numRows
+    numColsB=$numCols
+
+    #echo -e "A: $numRowsA $numColsA\tB: $numRowsB $numColsB"
+
+    #checks to make sure the dimensions of the matrices are the same before performing add
+    if [ $numRowsA -ne $numRowsB ] || [ $numColsA -ne $numColsB ]
+        then
+        echo -e "Error executing add - $1 and $2 must be the same dimensions" 1>/dev/stderr
+        return 1
+    fi
+
+    #this was taken from the post in Piazza(copied from StackExchange) 
+    #on reading two files simultanesously
+    while IFS= read -r numLineA && IFS= read -r numLineB <&3
+        do
+            for valA in $numLineA 
+                do
+                for valB in $numLineB
+                    do
+                    sum=$(expr $valA + $valB)
+                    printf "$sum\t" >> $tempRow
+                done
+            done
+            cat $tempRow
+    done <$1 3<$2
+
+    rm -f $tempRow
+}
+
+$1 ${@:2}
