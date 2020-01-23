@@ -1,0 +1,135 @@
+#! /bin/bash
+numRows=0
+numCols=0
+
+dims(){
+    #variable to store column count
+    colCnt=0
+    #read each line from  file or stdin into numLine
+    while read numLine
+        do
+        #for each value read from numLine
+        for i in $numLine
+            do
+            #increment colCnt by 1
+            colCnt=$(expr $colCnt + 1)
+        done
+        #if global variable numCols has not been set yet
+        if [ $numCols -eq 0 ]
+            then
+            #set numCols to initial colCnt
+            numCols=$colCnt
+        #else if colCnt is not equal to numCols
+        elif [ $colCnt -ne $numCols ]
+            then
+            #print error message and exit
+            printf "Error - invalid matrix\n"
+            exit 1
+        fi
+        #reset colCnt for next line 
+        colCnt=0
+        #incmrenent global variable numRows
+        numRows=$(expr $numRows + 1)
+    #read commant will read from file provided via argument 1 
+    #or via data being passed in from stdin
+    done <$1
+    #output of the results of the dimensions of the matrix
+    printf "$numRows $numCols\n"
+    return 0
+}
+
+multiply(){
+    #temp files
+    tempInput=tempInputFile$$
+    tempRowA=tempRowAFile$$
+    tempColB=tempColBFile$$
+    tempSum=tempSumFile$$
+    tempOutput=tempOutputFile$$
+    #variables
+    numRowsA=0
+    numColsA=0
+    numRowsB=0
+    numColsB=0
+    colCnt=1 #number of the column to cut from matrix B
+    numCnt=1 #index of the number to cut from the two slices from each matrix
+             #if numCnt=1 then we will multiply the value in the 1st position 
+             #in the row and also column
+    prod=0
+    sumOfProds=0
+
+    #echo results from dims on matrix in arg 1 into a temp input file
+    echo $(dims $1) >$tempInput
+    #read values into the variables from temp input file
+    read numRowsA numColsA <$tempInput
+    #repeat on matrix in arg 2
+    echo $(dims $2) >$tempInput
+    read numRowsB numColsB <$tempInput
+    #remove temp input file
+    rm -f $tempInput
+
+    #checks to make sure the dimensions of the matrices are the same before performing matrix multiplication
+    if [ $numColsA -ne $numRowsB ]
+        then
+        #output corresponding error message to stderr
+        echo -e "Error executing multiplication - matrix dimensions are invalid for this operation" 1>/dev/stderr
+        #return non-zero value
+        return 1
+    fi
+
+    #resulting matrix dimensions will be equal to numRowsA x numColsB
+    #use nested loops to iterate through each position of the resulting index
+    #grab corresponding row and column from the input matrices
+    #do calculation
+    #output to resulting matrix
+    while IFS= read -r numLineA
+        do
+        #extract read row from matrix A into a temp file
+        echo "$numLineA" >$tempRowA
+
+        #echo -e "inside loop 1"
+        #cat $tempRowA
+
+        colCnt=1
+        #for each column from Matrix B
+        while [ $colCnt -le $numRowsB ]
+            do
+
+            echo -e "inside loop 2"
+            cat $tempRowA
+            
+            #extract column into another temp file and covert to a row
+            cut -f $colCnt $2 | tr '\n' '\t' >$tempColB
+             
+            cat $tempColB
+            numCnt=1
+            #for each
+            while [ $numCnt -le $numColsA ]
+                do
+
+                echo -e "inside loop 3"
+                #cat $tempRowA
+                #cat $tempColB
+
+                #cut from tempRowA
+                numA=$(cut -f $numCnt $tempRowA)
+                #cut from tempRowB
+                numB=$(cut -f $numCnt $tempColB)
+                #multiply
+                prod=$(expr $numA*$numB)
+                #add
+                sumOfProds=$(expr $sumOfProds + $prod)
+                numCnt=$(expr $numCnt + 1)
+            done
+            echo -ne "$sumOfProds" >>$tempOutput
+            colCnt=$(expr $colCnt + 1)
+        done
+    done <$1
+    echo >>$tempOutput
+
+    cat $tempOutput
+
+    rm -f $tempRowA
+    rm -f $tempColB
+    rm -f $tempOutput
+}
+$1 ${@:2}

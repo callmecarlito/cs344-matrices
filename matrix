@@ -271,7 +271,7 @@ multiply(){
     #temp files
     tempInput=tempInputFile$$
     tempRowA=tempRowAFile$$
-    tempRowB=tempRowBFile$$
+    tempColB=tempColBFile$$
     tempSum=tempSumFile$$
     tempOutput=tempOutputFile$$
     #variables
@@ -279,6 +279,10 @@ multiply(){
     numColsA=0
     numRowsB=0
     numColsB=0
+    colCnt=1 #number of the column to cut from matrix B
+    numCnt=1 #index of the number to cut from the two slices from each matrix
+             #if numCnt=1 then we will multiply the value in the 1st position 
+             #in the row and also column
 
     #echo results from dims on matrix in arg 1 into a temp input file
     echo $(dims $1) >$tempInput
@@ -298,6 +302,38 @@ multiply(){
         #return non-zero value
         return 1
     fi
+
+    #resulting matrix dimensions will be equal to numRowsA x numColsB
+    #use nested loops to iterate through each position of the resulting index
+    #grab corresponding row and column from the input matrices
+    #do calculation
+    #output to resulting matrix
+    while IFS= read -r numLineA
+        do
+        #extract read row from matrix A into a temp file
+        echo "$numLineA" >$tempRowA
+        colCnt=1
+        #for each column from Matrix B
+        while [ $colCnt -le $numColsB ]
+            do
+            #extract column into another temp file
+            cut -f $numCnt $2 >$tempColB
+            #for each 
+                #cut from tempRowA
+                #cut from tempRowB
+
+                #multiply
+
+                #add
+                colCnt=$(expr $colCnt + 1)
+        done
+    done <$1
+
+    rm -f $tempInput
+    rm -f $tempRowA
+    rm -f $tempColB
+    rm -f $tempSum
+    rm -f $tempOutput
 }
 
 ###########################################################################
