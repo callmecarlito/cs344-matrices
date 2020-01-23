@@ -86,41 +86,35 @@ multiply(){
         #extract read row from matrix A into a temp file
         echo "$numLineA" >$tempRowA
 
-        #echo -e "inside loop 1"
-        #cat $tempRowA
-
         colCnt=1
         #for each column from Matrix B
         while [ $colCnt -le $numRowsB ]
             do
 
-            echo -e "inside loop 2"
-            cat $tempRowA
-            
             #extract column into another temp file and covert to a row
             cut -f $colCnt $2 | tr '\n' '\t' >$tempColB
              
-            cat $tempColB
             numCnt=1
-            #for each
+            sumOfProds=0
+            #for each value from row A and from col B
             while [ $numCnt -le $numColsA ]
                 do
-
-                echo -e "inside loop 3"
-                #cat $tempRowA
-                #cat $tempColB
 
                 #cut from tempRowA
                 numA=$(cut -f $numCnt $tempRowA)
                 #cut from tempRowB
                 numB=$(cut -f $numCnt $tempColB)
                 #multiply
-                prod=$(expr $numA*$numB)
+                prod=$(expr $numA \* $numB)
                 #add
                 sumOfProds=$(expr $sumOfProds + $prod)
                 numCnt=$(expr $numCnt + 1)
             done
-            echo -ne "$sumOfProds" >>$tempOutput
+            echo -ne "$sumOfProds\t" >>$tempOutput
+            #remove trailing \t char
+
+            #add newline char
+
             colCnt=$(expr $colCnt + 1)
         done
     done <$1
