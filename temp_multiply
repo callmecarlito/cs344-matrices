@@ -126,7 +126,7 @@ multiply(){
     done <$1
     echo >>$tempOutput
     
-    cat -A $tempOutput
+    cat $tempOutput
 
     rm -f $tempRowA
     rm -f $tempColB

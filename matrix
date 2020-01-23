@@ -272,7 +272,7 @@ multiply(){
     tempInput=tempInputFile$$
     tempRowA=tempRowAFile$$
     tempColB=tempColBFile$$
-    tempSum=tempSumFile$$
+    tempOutRow=tempOutRowFile$$
     tempOutput=tempOutputFile$$
     #variables
     numRowsA=0
@@ -283,6 +283,8 @@ multiply(){
     numCnt=1 #index of the number to cut from the two slices from each matrix
              #if numCnt=1 then we will multiply the value in the 1st position 
              #in the row and also column
+    prod=0
+    sumOfProds=0
 
     #echo results from dims on matrix in arg 1 into a temp input file
     echo $(dims $1) >$tempInput
@@ -312,27 +314,52 @@ multiply(){
         do
         #extract read row from matrix A into a temp file
         echo "$numLineA" >$tempRowA
+
         colCnt=1
         #for each column from Matrix B
-        while [ $colCnt -le $numColsB ]
+        while [ $colCnt -le $numRowsB ]
             do
-            #extract column into another temp file
-            cut -f $numCnt $2 >$tempColB
-            #for each 
+
+            #extract column into another temp file and covert to a row
+            cut -f $colCnt $2 | tr '\n' '\t' >$tempColB
+             
+            numCnt=1
+            sumOfProds=0
+            #for each value from row A and from col B
+            while [ $numCnt -le $numColsA ]
+                do
+
                 #cut from tempRowA
+                numA=$(cut -f $numCnt $tempRowA)
                 #cut from tempRowB
-
+                numB=$(cut -f $numCnt $tempColB)
                 #multiply
-
+                prod=$(expr $numA \* $numB)
                 #add
-                colCnt=$(expr $colCnt + 1)
+                sumOfProds=$(expr $sumOfProds + $prod)
+                numCnt=$(expr $numCnt + 1)
+            done
+            #echo each value for the row of the resulting matrix
+            echo -ne "$sumOfProds\t" >>$tempOutRow
+            colCnt=$(expr $colCnt + 1)
         done
+        #once all the values a resulting row have been appended to the tempOutRow file
+        #remove trailing tab 
+        temp=$(cat $tempOutRow)
+        temp=${temp::-1}
+        #echo formatted row onto the temp output file
+        echo -ne "$temp" >>$tempOutput
+        #cat $tempOutRow
+        #clear tempOutRow file
+        echo >$tempOutRow
     done <$1
+    echo >>$tempOutput
+    
+    cat $tempOutput
 
-    rm -f $tempInput
     rm -f $tempRowA
     rm -f $tempColB
-    rm -f $tempSum
+    rm -f $tempOutRow
     rm -f $tempOutput
 }
 
