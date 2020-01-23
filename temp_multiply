@@ -43,7 +43,7 @@ multiply(){
     tempInput=tempInputFile$$
     tempRowA=tempRowAFile$$
     tempColB=tempColBFile$$
-    tempSum=tempSumFile$$
+    tempOutRow=tempOutRowFile$$
     tempOutput=tempOutputFile$$
     #variables
     numRowsA=0
@@ -110,20 +110,27 @@ multiply(){
                 sumOfProds=$(expr $sumOfProds + $prod)
                 numCnt=$(expr $numCnt + 1)
             done
-            echo -ne "$sumOfProds\t" >>$tempOutput
-            #remove trailing \t char
-
-            #add newline char
-
+            #echo each value for the row of the resulting matrix
+            echo -ne "$sumOfProds\t" >>$tempOutRow
             colCnt=$(expr $colCnt + 1)
         done
+        #once all the values a resulting row have been appended to the tempOutRow file
+        #remove trailing tab 
+        temp=$(cat $tempOutRow)
+        temp=${temp::-1}
+        #echo formatted row onto the temp output file
+        echo -ne "$temp" >>$tempOutput
+        #cat $tempOutRow
+        #clear tempOutRow file
+        echo >$tempOutRow
     done <$1
     echo >>$tempOutput
-
-    cat $tempOutput
+    
+    cat -A $tempOutput
 
     rm -f $tempRowA
     rm -f $tempColB
+    rm -f $tempOutRow
     rm -f $tempOutput
 }
 $1 ${@:2}
