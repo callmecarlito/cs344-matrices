@@ -3,6 +3,17 @@
 numRows=0
 numCols=0
 
+trap "rm -f $tempCol;
+      rm -f $tempRow;
+      rm -f $tempRowB;
+      rm -f $tempSum;
+      rm -f $tempInput;
+      rm -f $tempRowA;
+      rm -f $tempColB;
+      rm -f $tempOutRow;
+      rm -f $tempOutput;
+      echo 'CTRL+C received, exiting'; 
+      exit 1" INT HUP TERM
 
 # validateMatrix()
 # parameter(s): File containing matrix to be verified
